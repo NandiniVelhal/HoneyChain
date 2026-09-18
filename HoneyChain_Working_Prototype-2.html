@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HoneyChain – Track • Verify • Trust</title>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f6f3ed;color:#2b241b}
+.app{max-width:430px;margin:auto;min-height:100vh;background:#fffdf8;box-shadow:0 0 25px #0001}
+header{background:#f2b632;padding:20px 18px 18px;border-radius:0 0 24px 24px}
+.logo{font-size:28px;font-weight:800}.tag{font-size:13px;margin-top:4px}
+main{padding:18px 16px 85px}.screen{display:none}.screen.active{display:block}
+h2{margin:8px 0 14px;font-size:23px}.muted{color:#756b5d;font-size:13px}
+.card{background:white;border:1px solid #eadfcd;border-radius:17px;padding:16px;margin:12px 0;box-shadow:0 3px 12px #00000008}
+.hero{text-align:center;padding:22px 12px}.bee{font-size:55px}
+.btn{border:0;border-radius:12px;padding:13px 15px;font-weight:700;font-size:14px;cursor:pointer;background:#2e7d32;color:white;margin:5px 3px}
+.btn.alt{background:#f2b632;color:#2b241b}.btn.light{background:#eee8dc;color:#2b241b}.btn.full{width:100%}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#fff;border:1px solid #eadfcd;border-radius:14px;padding:14px}.num{font-size:24px;font-weight:800}
+input,select{width:100%;padding:12px;border:1px solid #d9cfbf;border-radius:10px;margin:5px 0 12px;background:#fff;font-size:14px}
+label{font-size:12px;font-weight:700}.batch{display:flex;justify-content:space-between;align-items:center;gap:10px}.badge{padding:5px 9px;border-radius:20px;background:#dff0df;color:#27652a;font-size:11px;font-weight:700}
+.journey{display:grid;gap:9px;margin:15px 0}.step{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;background:#f6f1e8}.dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#2e7d32;color:#fff;font-weight:700}
+.qrbox{text-align:center}.qrbox img{width:190px;height:190px;border:10px solid white;box-shadow:0 2px 12px #0002}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,100%);background:white;border-top:1px solid #e7dfd2;display:flex;justify-content:space-around;padding:10px 4px;z-index:5}
+nav button{border:0;background:none;font-size:11px;color:#5e554a;cursor:pointer}nav span{display:block;font-size:20px;margin-bottom:2px}
+.small{font-size:12px}.success{background:#e7f5e8;padding:12px;border-radius:12px;color:#28642d}
+footer{text-align:center;font-size:11px;color:#8a8072;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">🍯 HoneyChain</div><div class="tag">Track • Verify • Trust</div></header>
+<main>
+
+<section id="home" class="screen active">
+<div class="hero"><div class="bee">🐝</div><h2>From Hive to Home</h2><p class="muted">Every drop has a story.</p>
+<button class="btn full" onclick="show('beekeeper')">Beekeeper Portal</button>
+<button class="btn alt full" onclick="show('customer')">Customer Portal</button></div>
+<div class="card"><b>How HoneyChain works</b><div class="journey">
+<div class="step"><div class="dot">1</div>Hive / Farm</div><div class="step"><div class="dot">2</div>Collection</div><div class="step"><div class="dot">3</div>Quality Check</div><div class="step"><div class="dot">4</div>Processing</div><div class="step"><div class="dot">5</div>Packaging → Customer</div>
+</div></div>
+</section>
+
+<section id="beekeeper" class="screen">
+<h2>Beekeeper Dashboard</h2><div class="grid"><div class="stat"><div class="num" id="hives">12</div><div class="muted">Beehives</div></div><div class="stat"><div class="num" id="total">60 kg</div><div class="muted">Total Honey</div></div></div>
+<button class="btn full" onclick="show('add')">＋ Add Honey Batch</button>
+<div class="card"><b>Recent Batches</b><div id="batchList"></div></div>
+</section>
+
+<section id="add" class="screen">
+<h2>Add Honey Batch</h2><div class="card">
+<label>Batch ID</label><input id="f_id" placeholder="Example: HC004">
+<label>Farm / Apiary</label><input id="f_farm" placeholder="Example: Green Bee Farm">
+<label>Location</label><input id="f_loc" placeholder="Example: Satara">
+<label>Collection Date</label><input id="f_date" type="date">
+<label>Honey Type</label><select id="f_type"><option>Wildflower</option><option>Forest</option><option>Multifloral</option><option>Mustard</option></select>
+<label>Quantity (kg)</label><input id="f_qty" type="number" placeholder="20">
+<label>Moisture</label><input id="f_moist" placeholder="Example: 16%">
+<button class="btn full" onclick="addBatch()">Save Batch</button>
+<button class="btn light full" onclick="show('beekeeper')">Cancel</button>
+<div id="saveMsg"></div></div></section>
+
+<section id="details" class="screen">
+<h2>Batch Details</h2><div id="detailsBox"></div></section>
+
+<section id="journey" class="screen">
+<h2>Honey Journey</h2><div id="journeyBox"></div></section>
+
+<section id="customer" class="screen">
+<h2>Customer</h2><div class="hero card"><div class="bee">📱</div><h2>Scan Honey QR</h2><p class="muted">For this prototype, choose a batch to simulate scanning its QR code.</p>
+<div id="customerBatches"></div></div></section>
+
+<section id="qr" class="screen">
+<h2>Batch QR</h2><div id="qrBox" class="card qrbox"></div></section>
+
+<section id="dashboard" class="screen">
+<h2>Production Dashboard</h2><div class="grid">
+<div class="stat"><div class="num" id="d_batches">3</div><div class="muted">Batches</div></div>
+<div class="stat"><div class="num" id="d_qty">60 kg</div><div class="muted">Honey</div></div>
+<div class="stat"><div class="num" id="d_pass">3</div><div class="muted">Quality Passed</div></div>
+<div class="stat"><div class="num">5</div><div class="muted">Active Sellers</div></div>
+</div><div class="card"><b>Production Overview</b><div style="font-size:42px;text-align:center;margin:25px 0">▁ ▃ ▅ ▆ ▄ ▇</div><p class="muted">Sample visualization for prototype demonstration.</p></div></section>
+
+<footer>HoneyChain prototype • No-code concept • Data stored in this browser</footer>
+</main>
+<nav>
+<button onclick="show('home')"><span>🏠</span>Home</button>
+<button onclick="show('beekeeper')"><span>🐝</span>Beekeeper</button>
+<button onclick="show('customer')"><span>📱</span>Customer</button>
+<button onclick="show('dashboard')"><span>📊</span>Dashboard</button>
+</nav>
+</div>
+
+<script>
+const starter=[
+{id:"HC001",farm:"Green Bee Farm",loc:"Satara",date:"2026-03-17",type:"Wildflower",qty:20,moist:"16%",quality:"Passed",processing:"Completed",packaging:"Completed"},
+{id:"HC002",farm:"Sunrise Apiary",loc:"Pune",date:"2026-03-18",type:"Forest",qty:15,moist:"17%",quality:"Passed",processing:"Completed",packaging:"Completed"},
+{id:"HC003",farm:"Honey Valley",loc:"Satara",date:"2026-03-20",type:"Multifloral",qty:25,moist:"15%",quality:"Passed",processing:"Completed",packaging:"Completed"}
+];
+let batches=JSON.parse(localStorage.getItem("honeychain_batches")||"null")||starter;
+function save(){localStorage.setItem("honeychain_batches",JSON.stringify(batches));}
+function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");render();window.scrollTo(0,0)}
+function render(){
+let list=document.getElementById("batchList"); list.innerHTML="";
+batches.forEach(b=>{list.innerHTML+=`<div class="card batch"><div><b>${b.id}</b><div class="muted">${b.farm} • ${b.qty} kg</div></div><button class="btn alt" onclick="openDetails('${b.id}')">View</button></div>`});
+let cb=document.getElementById("customerBatches");cb.innerHTML=batches.map(b=>`<button class="btn full" onclick="openDetails('${b.id}')">🔍 Scan ${b.id} – ${b.type}</button>`).join("");
+let total=batches.reduce((s,b)=>s+Number(b.qty||0),0);
+document.getElementById("total").textContent=total+" kg";document.getElementById("hives").textContent=12;
+document.getElementById("d_batches").textContent=batches.length;document.getElementById("d_qty").textContent=total+" kg";document.getElementById("d_pass").textContent=batches.filter(b=>b.quality==="Passed").length;
+}
+function find(id){return batches.find(b=>b.id===id)}
+function openDetails(id){let b=find(id);if(!b)return;
+document.getElementById("detailsBox").innerHTML=`<div class="card">
+<div class="batch"><h3>${b.id}</h3><span class="badge">${b.quality}</span></div>
+<p><b>Farm:</b> ${b.farm}</p><p><b>Location:</b> ${b.loc}</p><p><b>Collection:</b> ${b.date}</p><p><b>Honey Type:</b> ${b.type}</p><p><b>Quantity:</b> ${b.qty} kg</p><p><b>Moisture:</b> ${b.moist}</p>
+<button class="btn" onclick="openJourney('${b.id}')">View Honey Journey</button>
+<button class="btn alt" onclick="openQR('${b.id}')">Show QR</button>
+</div>`;show("details")}
+function openJourney(id){let b=find(id);document.getElementById("journeyBox").innerHTML=`<div class="card"><h3>${b.id}</h3><div class="journey">${["Hive / Farm","Collection","Quality Check – "+b.quality,"Processing – "+b.processing,"Packaging – "+b.packaging,"Ready for Sale"].map((x,i)=>`<div class="step"><div class="dot">✓</div>${x}</div>`).join("")}</div><button class="btn alt full" onclick="openQR('${b.id}')">Generate / View QR</button></div>`;show("journey")}
+function openQR(id){let b=find(id);let data=encodeURIComponent("HoneyChain Batch "+b.id+" | "+b.farm+" | "+b.type+" | "+b.qty+"kg | Quality: "+b.quality);
+document.getElementById("qrBox").innerHTML=`<h3>${b.id}</h3><img alt="QR code for ${b.id}" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${data}"><p><b>Scan to identify this honey batch</b></p><p class="muted">Demo QR contains the batch summary. In the final Glide app, this QR can be linked to the batch record/customer page.</p><button class="btn full" onclick="openDetails('${b.id}')">Open Batch Information</button>`;show("qr")}
+function addBatch(){
+let id=document.getElementById("f_id").value.trim(),farm=document.getElementById("f_farm").value.trim(),loc=document.getElementById("f_loc").value.trim(),date=document.getElementById("f_date").value,type=document.getElementById("f_type").value,qty=document.getElementById("f_qty").value,moist=document.getElementById("f_moist").value.trim();
+if(!id||!farm||!loc||!date||!qty){document.getElementById("saveMsg").innerHTML='<p class="muted">Please fill Batch ID, farm, location, date and quantity.</p>';return}
+if(find(id)){document.getElementById("saveMsg").innerHTML='<p class="muted">That Batch ID already exists. Use a new ID.</p>';return}
+batches.push({id,farm,loc,date,type,qty,moist:moist||"Not entered",quality:"Pending",processing:"Pending",packaging:"Pending"});save();
+document.getElementById("saveMsg").innerHTML='<div class="success">✓ Batch saved successfully.</div>';
+["f_id","f_farm","f_loc","f_date","f_qty","f_moist"].forEach(x=>document.getElementById(x).value="");render();
+}
+render();
+</script>
+</body>
+</html>
